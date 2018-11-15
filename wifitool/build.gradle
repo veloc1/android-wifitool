@@ -1,21 +1,18 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
-apply plugin: 'jacoco'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "ru.yandex.qatools.wifitool"
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode System.env.TRAVIS_BUILD_NUMBER as Integer
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 101
         versionName "1.0.1"
     }
     buildTypes {
@@ -26,39 +23,16 @@ android {
             testCoverageEnabled true
         }
     }
-    testOptions {
-        unitTests {
-            all {
-                // for correct robolectric test coverage
-                jacoco {
-                    includeNoLocationClasses = true
-                }
-            }
-        }
-    }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.code.findbugs:jsr305:2.0.1'
-    compile 'com.parse.bolts:bolts-tasks:1.4.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.6.4'
-    testCompile 'org.robolectric:robolectric:3.2.1'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.parse.bolts:bolts-tasks:1.4.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.16.0'
+    testImplementation 'org.robolectric:robolectric:3.3.2'
 
-    apt 'com.google.dagger:dagger-compiler:2.6'
-    compile 'com.google.dagger:dagger:2.6'
-}
-
-def sonarVariant = 'debug'
-sonarqube {
-    androidVariant = sonarVariant
-    properties {
-        property 'sonar.junit.reportsPath', "build/test-results/${sonarVariant}"
-        property 'sonar.jacoco.reportPaths', "build/jacoco/test${sonarVariant.capitalize()}UnitTest.exec"
-        property 'sonar.android.lint.report', "build/outputs/lint-results-${sonarVariant}.xml"
-    }
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.19'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.19'
+    implementation 'com.google.dagger:dagger-android:2.19'
 }

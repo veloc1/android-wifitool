@@ -17,7 +17,6 @@ import bolts.Task;
 import bolts.TaskCompletionSource;
 import ru.yandex.qatools.wifitool.utils.ConnectivityChecker;
 
-import static junit.framework.Assert.assertNotNull;
 
 /**
  * Waits for network to get connected.
@@ -91,8 +90,9 @@ class ConnectivityMonitor {
 
     private synchronized void unregister() {
         Log.d(Tag.NAME, "Unregister network status receiver");
-        assertNotNull("Receiver must be registered before unregister",
-                mBroadcastReceiver);
+        if (mBroadcastReceiver == null) {
+            throw new RuntimeException("Receiver must be registered before unregister");
+        }
         mContext.unregisterReceiver(mBroadcastReceiver);
     }
 }

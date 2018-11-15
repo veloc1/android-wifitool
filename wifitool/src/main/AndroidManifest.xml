@@ -26,6 +26,11 @@
             android:enabled="true"
             android:exported="true"/>
 
+        <receiver
+            android:name=".Disconnect"
+            android:enabled="true"
+            android:exported="true"/>
+
         <service
             android:name=".WifiIntentService"
             android:exported="false"/>

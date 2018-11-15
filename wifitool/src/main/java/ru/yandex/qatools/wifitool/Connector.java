@@ -61,6 +61,22 @@ class Connector {
     }
 
     @Nonnull
+    Task<Void> disconnect() {
+        int wifiState = mWifiManager.getWifiState();
+        Log.d(Tag.NAME, WifiStates.getName(wifiState));
+        switch (wifiState) {
+            case WifiManager.WIFI_STATE_ENABLING:
+            case WifiManager.WIFI_STATE_DISABLED:
+            case WifiManager.WIFI_STATE_DISABLING:
+            case WifiManager.WIFI_STATE_ENABLED:
+                return disableWifi();
+            case WifiManager.WIFI_STATE_UNKNOWN:
+            default:
+                throw new IllegalStateException("WiFi state unknown. Please inspect the device");
+        }
+    }
+
+    @Nonnull
     private Task<Params> enableWifi(final Params params) {
         if (mWifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             return Task.forResult(params);
@@ -77,6 +93,13 @@ class Connector {
             throw new IllegalStateException("WiFi could not be enabled. Now " +
                     WifiStates.getName(wifiState));
         });
+    }
+
+    @Nonnull
+    private Task<Void> disableWifi() {
+        Log.d(Tag.NAME, "Setting WiFi disabled");
+        mWifiManager.setWifiEnabled(false);
+        return Task.forResult(null);
     }
 
     /**

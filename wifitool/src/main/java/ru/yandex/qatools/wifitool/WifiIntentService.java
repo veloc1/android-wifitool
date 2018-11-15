@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import bolts.Continuation;
+import ru.yandex.qatools.wifitool.utils.StringValues;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -37,18 +38,23 @@ public class WifiIntentService extends IntentService {
     }
 
     void handle(Intent intent) throws InterruptedException {
-        Params params = Params.create(intent);
-        ParamsValidator validator = new ParamsValidator(params);
-        if (validator.isValid) {
-            Log.d(Tag.NAME, "Start connection");
-
+        Params          params    = Params.create(intent);
+        if (params.quotedSsid.equals("\"null\"")) {
             RetryConnector retryConnector = mRetryConnectorProvider.get();
-            retryConnector.connect(params)
-                    .continueWith(reportResult())
-                    .waitForCompletion();
+            retryConnector.disconnect();
         } else {
-            Log.i(Tag.FAIL, validator.message);
-            logUsage();
+            ParamsValidator validator = new ParamsValidator(params);
+            if (validator.isValid) {
+                Log.d(Tag.NAME, "Start connection");
+
+                RetryConnector retryConnector = mRetryConnectorProvider.get();
+                retryConnector.connect(params)
+                              .continueWith(reportResult())
+                              .waitForCompletion();
+            } else {
+                Log.i(Tag.FAIL, validator.message);
+                logUsage();
+            }
         }
     }
 
